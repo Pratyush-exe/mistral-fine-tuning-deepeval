@@ -18,21 +18,21 @@ training_args = TrainingArguments(
     output_dir="./",
     optim="paged_adamw_32bit",
     warmup_steps=100,
-    bf16=True,
 )
 
-model = Mistral(model_id)
-tokenizer = Tokenizer(model_id)
-dataset = EvalDataset(tokenizer)
+model_c = Mistral(model_id)
+model = model_c.model
+tokenizer = Tokenizer(model_id).tokenizer
+dataset = EvalDataset(tokenizer).dataset
 
 
 dpo_trainer = DPOTrainer(
     model,
-    model,
+    None,
     args=training_args,
     train_dataset=dataset,
     tokenizer=tokenizer,
-    peft_config=model.lora_config,
+    peft_config=model_c.lora_config,
     beta=0.1,
     max_prompt_length=1024,
     max_length=1536,
