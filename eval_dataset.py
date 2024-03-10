@@ -29,6 +29,14 @@ class EvalDataset:
             "rejected": rejected,
         }
 
-    def get(self, index):
+    def get(self, index, apply_template=True):
         data = self.dataset[index]
-        return self.convert_to_chatml(data)
+        if apply_template:
+            return self.convert_to_chatml(data)
+        else:
+            return data
+
+    def create_dataset(self):
+        self.dataset = self.dataset.map(
+            self.convert_to_chatml, remove_columns=["system", "question"]
+        )
