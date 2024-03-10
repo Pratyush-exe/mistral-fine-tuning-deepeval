@@ -8,22 +8,23 @@ class EvalDataset:
         self.index = 0
 
     def convert_to_chatml(self, data):
+        messages = []
         if len(data["system"]) > 0:
             message = {"role": "system", "content": data["system"]}
-            system = self.tokenizer.apply_chat_template([message], tokenize=False)
-        else:
-            system = ""
+            messages.append(message)
 
         message = {"role": "user", "content": data["question"]}
+        messages.append(message)
+
         prompt = self.tokenizer.apply_chat_template(
-            [message], tokenize=False, add_generation_prompt=True
+            messages, tokenize=False, add_generation_prompt=True
         )
 
         chosen = data["chosen"] + "<|im_end|>\n"
         rejected = data["rejected"] + "<|im_end|>\n"
 
         return {
-            "prompt": system + prompt,
+            "prompt": prompt,
             "chosen": chosen,
             "rejected": rejected,
         }
