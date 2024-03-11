@@ -4,6 +4,7 @@ from model import Mistral
 from trl import DPOTrainer
 from transformers import TrainingArguments
 from modal_config import stub, fine_tune_img
+from deepeval_utils import create_callback
 
 
 @stub.function(gpu="L4", image=fine_tune_img, timeout=9999)
@@ -40,5 +41,8 @@ def run():
         max_prompt_length=1024,
         max_length=1536,
     )
+
+    # deepeval_callback = create_callback(dataset.get_eval_data(), dpo_trainer)
+    # dpo_trainer.add_callback(deepeval_callback)
 
     dpo_trainer.train()

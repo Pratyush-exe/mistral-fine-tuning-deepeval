@@ -20,8 +20,8 @@ class Dataset:
             messages, tokenize=False, add_generation_prompt=True
         )
 
-        chosen = data["chosen"] + "<|im_end|>\n"
-        rejected = data["rejected"] + "<|im_end|>\n"
+        chosen = data["chosen"] + "</s>"
+        rejected = data["rejected"] + "</s>"
 
         return {
             "prompt": prompt,
@@ -40,7 +40,7 @@ class Dataset:
         self.dataset = self.dataset.map(
             self.convert_to_chatml, remove_columns=["system", "question"]
         )
-        split_dataset = self.dataset.train_test_split(test_size=0.05)
+        split_dataset = self.dataset.train_test_split(test_size=0.02)
         self.train_dataset, self.test_dataset = (
             split_dataset["train"],
             split_dataset["test"],
