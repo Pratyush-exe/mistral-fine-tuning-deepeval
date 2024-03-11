@@ -20,6 +20,9 @@ class Tokenizer:
             model_id, add_bos_token=True, chat_template=chat_template
         )
 
+    def get_tokenizer(self):
+        return self.tokenizer
+
     def tokenize(self, prompt):
         result = self.tokenizer(
             prompt,

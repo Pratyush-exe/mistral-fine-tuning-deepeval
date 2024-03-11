@@ -1,4 +1,4 @@
-from eval_dataset import EvalDataset
+from dataset import Dataset
 from tokenizer import Tokenizer
 from model import Mistral
 from trl import DPOTrainer
@@ -23,15 +23,15 @@ training_args = TrainingArguments(
 model_c = Mistral(model_id)
 model = model_c.model
 tokenizer = Tokenizer(model_id)
-dataset = EvalDataset(tokenizer.tokenizer)
+dataset = Dataset(tokenizer.tokenizer)
 dataset.create_dataset()
 
 dpo_trainer = DPOTrainer(
     model,
     None,
     args=training_args,
-    train_dataset=dataset.dataset,
-    tokenizer=tokenizer.tokenizer,
+    train_dataset=dataset.get_training_data(),
+    tokenizer=tokenizer.get_tokenizer(),
     peft_config=model_c.lora_config,
     beta=0.1,
     max_prompt_length=1024,
