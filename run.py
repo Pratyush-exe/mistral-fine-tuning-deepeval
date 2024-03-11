@@ -3,7 +3,7 @@ from tokenizer import Tokenizer
 from model import Mistral
 from trl import DPOTrainer
 from transformers import TrainingArguments
-from common import stub, fine_tune_img
+from modal_config import stub, fine_tune_img
 
 
 @stub.function(gpu="L4", image=fine_tune_img, timeout=9999)

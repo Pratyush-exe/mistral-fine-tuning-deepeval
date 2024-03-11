@@ -1,5 +1,5 @@
 from run import run
-from common import stub
+from modal_config import stub
 
 
 @stub.local_entrypoint()
