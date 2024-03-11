@@ -25,6 +25,9 @@ class Mistral:
         self.accelerator = self.load_accelerators()
         self.model = self.load_lora(model)
 
+    def get_model(self):
+        return self.model
+
     def load_lora(self, model):
         model.gradient_checkpointing_enable()
         model = prepare_model_for_kbit_training(model)
