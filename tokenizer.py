@@ -20,15 +20,16 @@ class Tokenizer:
             model_id, add_bos_token=True, chat_template=chat_template
         )
 
+        self.tokenizer_args = {
+            "truncation": True,
+            "max_length": 512,
+            "padding": "max_length",
+        }
+
     def get_tokenizer(self):
         return self.tokenizer
 
     def tokenize(self, prompt):
-        result = self.tokenizer(
-            prompt,
-            truncation=True,
-            max_length=512,
-            padding="max_length",
-        )
+        result = self.tokenizer(prompt, **self.tokenizer_args)
         result["labels"] = result["input_ids"].copy()
         return result

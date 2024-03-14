@@ -25,7 +25,7 @@ def create_eval_dataset(dataset):
     return dataset
 
 
-def create_callback(dataset, trainer):
+def create_callback(dataset, trainer, tokenizer):
     import os
 
     os.environ["OPENAI_API_KEY"] = "api-key"
@@ -33,7 +33,11 @@ def create_callback(dataset, trainer):
     eval_dataset = create_eval_dataset(dataset)
     metrics = create_metrics()
     callback = DeepEvalHuggingFaceCallback(
-        evaluation_dataset=eval_dataset, metrics=metrics, trainer=trainer
+        evaluation_dataset=eval_dataset,
+        metrics=metrics,
+        trainer=trainer,
+        show_table=True,
+        tokenizer_args=tokenizer.tokenizer_args,
     )
 
     return callback
