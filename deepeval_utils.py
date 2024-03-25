@@ -48,17 +48,27 @@ def custom_on_log(
         self.rich_manager.advance_progress()
 
         self.rich_manager.change_spinner_text(self.task_descriptions["evaluate"])
+        req_keys = [
+            "logps/rejected",
+            "logps/chosen",
+            "logits/rejected",
+            "logits/chosen",
+        ]
 
         scores = self._calculate_metric_scores()
         self.deepeval_metric_history.append(scores)
         self.deepeval_metric_history[-1].update(state.log_history[-1])
 
-        print(self.deepeval_metric_history)
-
         import json
 
         f = open("file.txt", "w")
         f.write(json.dumps(self.deepeval_metric_history))
+
+        self.deepeval_metric_history[-1] = dict(
+            (key, value)
+            for key, value in self.deepeval_metric_history[-1].items()
+            if key not in req_keys
+        )
 
         self.rich_manager.change_spinner_text(self.task_descriptions["training"])
         columns = self._generate_table()
