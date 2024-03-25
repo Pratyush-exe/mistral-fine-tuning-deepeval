@@ -2,6 +2,15 @@ from deepeval.dataset import EvaluationDataset, Golden
 from deepeval.metrics import BiasMetric, ToxicityMetric
 from deepeval.integrations.hugging_face import DeepEvalHuggingFaceCallback
 
+from transformers import (
+    TrainerCallback,
+    ProgressCallback,
+    Trainer,
+    TrainingArguments,
+    TrainerState,
+    TrainerControl,
+)
+
 
 def create_goldens(dataset):
     goldens = []
@@ -25,6 +34,37 @@ def create_eval_dataset(dataset):
     return dataset
 
 
+def custom_on_log(
+    self,
+    args: TrainingArguments,
+    state: TrainerState,
+    control: TrainerControl,
+    **kwargs,
+):
+    """
+    Event triggered after logging the last logs.
+    """
+    if self.show_table and len(state.log_history) <= self.trainer.args.num_train_epochs:
+        self.rich_manager.advance_progress()
+
+        self.rich_manager.change_spinner_text(self.task_descriptions["evaluate"])
+
+        scores = self._calculate_metric_scores()
+        self.deepeval_metric_history.append(scores)
+        self.deepeval_metric_history[-1].update(state.log_history[-1])
+
+        print(self.deepeval_metric_history)
+
+        import json
+
+        f = open("file.txt", "w")
+        f.write(json.dumps(self.deepeval_metric_history))
+
+        self.rich_manager.change_spinner_text(self.task_descriptions["training"])
+        columns = self._generate_table()
+        self.rich_manager.update(columns)
+
+
 def create_callback(dataset, trainer, tokenizer):
     import os
 
@@ -39,5 +79,7 @@ def create_callback(dataset, trainer, tokenizer):
         show_table=True,
         tokenizer_args=tokenizer.tokenizer_args,
     )
+
+    callback.on_log = custom_on_log.__get__(callback, DeepEvalHuggingFaceCallback)
 
     return callback
